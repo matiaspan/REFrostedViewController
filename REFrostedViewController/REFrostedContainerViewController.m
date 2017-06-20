@@ -133,11 +133,17 @@
     self.containerView.frame = frame;
     self.backgroundImageView.frame = CGRectMake(- frame.origin.x, - frame.origin.y, self.view.bounds.size.width, self.view.bounds.size.height);
     
+    
     CGRect statusFrame = [self statusBarView].superview.frame;
     statusFrame.origin.x = CGRectGetMaxX(frame);
     
     CGRect contentFrame = [self frostedViewController].contentViewController.view.frame;
     contentFrame.origin.x = CGRectGetMaxX(frame);
+    
+    if (self.frostedViewController.direction == REFrostedViewControllerDirectionLeft) {
+        statusFrame.origin.x = MAX(0, statusFrame.origin.x);
+        contentFrame.origin.x = MAX(0, contentFrame.origin.x);
+    }
     
     [[self statusBarView].superview setFrame:statusFrame];
     [[self frostedViewController].contentViewController.view setFrame:contentFrame];
@@ -227,7 +233,7 @@
 
 - (void)hide
 {
-	[self hideWithCompletionHandler:nil];
+    [self hideWithCompletionHandler:nil];
 }
 
 - (void)hideWithCompletionHandler:(void(^)(void))completionHandler
@@ -346,7 +352,7 @@
             frame.origin.x = self.containerOrigin.x + point.x;
             if (frame.origin.x < self.view.frame.size.width - self.frostedViewController.calculatedMenuViewSize.width) {
                 frame.origin.x = self.view.frame.size.width - self.frostedViewController.calculatedMenuViewSize.width;
-            
+                
                 if (!self.frostedViewController.limitMenuViewSize) {
                     frame.origin.x = self.containerOrigin.x + point.x;
                     if (frame.origin.x < 0)
@@ -360,7 +366,7 @@
             frame.origin.y = self.containerOrigin.y + point.y;
             if (frame.origin.y > 0) {
                 frame.origin.y = 0;
-            
+                
                 if (!self.frostedViewController.limitMenuViewSize) {
                     frame.size.height = self.frostedViewController.calculatedMenuViewSize.height + self.containerOrigin.y + point.y;
                     if (frame.size.height > self.view.frame.size.height)
@@ -373,7 +379,7 @@
             frame.origin.y = self.containerOrigin.y + point.y;
             if (frame.origin.y < self.view.frame.size.height - self.frostedViewController.calculatedMenuViewSize.height) {
                 frame.origin.y = self.view.frame.size.height - self.frostedViewController.calculatedMenuViewSize.height;
-            
+                
                 if (!self.frostedViewController.limitMenuViewSize) {
                     frame.origin.y = self.containerOrigin.y + point.y;
                     if (frame.origin.y < 0)
