@@ -132,6 +132,20 @@
     
     self.containerView.frame = frame;
     self.backgroundImageView.frame = CGRectMake(- frame.origin.x, - frame.origin.y, self.view.bounds.size.width, self.view.bounds.size.height);
+    
+    CGRect statusFrame = [self statusBarView].superview.frame;
+    statusFrame.origin.x = CGRectGetMaxX(frame);
+    
+    CGRect contentFrame = [self frostedViewController].contentViewController.view.frame;
+    contentFrame.origin.x = CGRectGetMaxX(frame);
+    
+    [[self statusBarView].superview setFrame:statusFrame];
+    [[self frostedViewController].contentViewController.view setFrame:contentFrame];
+    
+    CGFloat maxX = frame.size.width;
+    CGFloat currentX = statusFrame.origin.x;
+    CGFloat progress = currentX / maxX;
+    [self setBackgroundViewsAlpha:self.frostedViewController.backgroundFadeAmount * progress];
 }
 
 - (void)setBackgroundViewsAlpha:(CGFloat)alpha
@@ -286,6 +300,17 @@
 - (void)tapGestureRecognized:(UITapGestureRecognizer *)recognizer
 {
     [self hide];
+}
+
+// This uses private APIs
+- (UIView *)statusBarView {
+    NSString *key = [[NSString alloc] initWithData:[NSData dataWithBytes:(unsigned char []){0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x61, 0x72} length:9] encoding:NSASCIIStringEncoding];
+    id object = [UIApplication sharedApplication];
+    UIView *statusBar = nil;
+    if ([object respondsToSelector:NSSelectorFromString(key)]) {
+        statusBar = [object valueForKey:key];
+    }
+    return statusBar;
 }
 
 - (void)panGestureRecognized:(UIPanGestureRecognizer *)recognizer
